@@ -1,6 +1,8 @@
-name: CommonVideoPlayer
+name: common_video_player
 description: A example of Flutter video demo.
-publish_to: https://github.com/fluttercommunity
+homepage: https://github.com/ZSL320/commonVideoPlayer.git
+publish_to: https://pub.dartlang.org
+
 
 version: 1.0.0+1
 
@@ -17,6 +19,8 @@ dependencies:
   brightness_volume: ^1.0.3 # 亮度和音量调节
   flick_video_player: ^0.5.0
   auto_orientation: ^2.2.1
+  provider: ^6.0.3
+  video_player: ^2.4.7
 
 dev_dependencies:
   flutter_test:
