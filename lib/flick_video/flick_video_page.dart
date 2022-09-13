@@ -397,21 +397,23 @@ class _CommonVideoPlayerState extends State<CommonVideoPlayer> {
             controls: VideoState.isFullScreen
                 ? VideoPortraitControls(
                     flickManager: flickManager!,
-                    progressBarSettings: FlickProgressBarSettings(
-                      curveRadius: 30,
-                      playedColor: Color(0xffee4a0f),
-                      height: 6,
-                      handleRadius: 7,
-                    ),
+                    progressBarSettings: widget.flickProgressBarSettings ??
+                        FlickProgressBarSettings(
+                          curveRadius: 30,
+                          playedColor: Color(0xffee4a0f),
+                          height: 6,
+                          handleRadius: 7,
+                        ),
                   )
                 : VideoPlayerFlickPortraitControls(
                     flickManager: flickManager!,
-                    progressBarSettings: FlickProgressBarSettings(
-                      curveRadius: 30,
-                      playedColor: Color(0xffee4a0f),
-                      height: 6,
-                      handleRadius: 7,
-                    ),
+                    progressBarSettings: widget.flickProgressBarSettings ??
+                        FlickProgressBarSettings(
+                          curveRadius: 30,
+                          playedColor: Color(0xffee4a0f),
+                          height: 6,
+                          handleRadius: 7,
+                        ),
                   ),
           ),
         ),

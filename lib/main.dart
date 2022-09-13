@@ -51,10 +51,10 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         },
         child: videoFinished ?? false
-            ? Icon(Icons.play_arrow)
+            ? const Icon(Icons.play_arrow)
             : isPlaying ?? false
-                ? Icon(Icons.pause)
-                : Icon(Icons.play_arrow),
+                ? const Icon(Icons.pause)
+                : const Icon(Icons.play_arrow),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -87,15 +87,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   )),
             ),
-            SizedBox(
+            const SizedBox(
               height: 13,
             ),
             const Text("播放ui，控件可根据返回的controller自定义"),
-            SizedBox(
+            const SizedBox(
               height: 13,
             ),
             player ?? Container(),
-            SizedBox(
+            const SizedBox(
               height: 38,
             ),
             Container(
