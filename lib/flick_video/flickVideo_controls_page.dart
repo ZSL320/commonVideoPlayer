@@ -1,12 +1,13 @@
 import 'dart:io';
+import 'package:CommonVideoPlayer/flick_video/video_native_player.dart';
+import 'package:CommonVideoPlayer/flick_video/video_state.dart';
 import 'package:auto_orientation/auto_orientation.dart';
 import 'package:flutter/material.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:videoplayer/flick_video/video_native_player.dart';
-import 'package:videoplayer/flick_video/video_state.dart';
+
 
 class FlickVideoControlsPage extends StatefulWidget {
   const FlickVideoControlsPage({

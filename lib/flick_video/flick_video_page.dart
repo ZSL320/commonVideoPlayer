@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:CommonVideoPlayer/flick_video/percent_widget.dart';
+import 'package:CommonVideoPlayer/flick_video/video_portrait_controls.dart';
+import 'package:CommonVideoPlayer/flick_video/video_state.dart';
 import 'package:auto_orientation/auto_orientation.dart';
 import 'package:brightness_volume/brightness_volume.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
@@ -8,9 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
-import 'package:videoplayer/flick_video/percent_widget.dart';
-import 'package:videoplayer/flick_video/video_portrait_controls.dart';
-import 'package:videoplayer/flick_video/video_state.dart';
 
 import '../../utils/logUtil.dart';
 import 'flickVideo_controls_page.dart';
