@@ -94,6 +94,84 @@ class VideoPortraitControls extends StatelessWidget {
                       FlickSubtitleToggle(
                         size: iconSize,
                       ),
+                      PopupMenuButton(
+                        itemBuilder: (BuildContext context) {
+                          return <PopupMenuEntry>[
+                            PopupMenuItem(
+                              onTap: () {
+                                flickManager.flickControlManager!
+                                    .setPlaybackSpeed(0.5);
+                              },
+                              child: Text(
+                                "0.5X",
+                                style: TextStyle(
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              onTap: () {
+                                flickManager.flickControlManager!
+                                    .setPlaybackSpeed(0.75);
+                              },
+                              child: Text(
+                                "0.75X",
+                                style: TextStyle(
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              onTap: () {
+                                flickManager.flickControlManager!
+                                    .setPlaybackSpeed(1.0);
+                              },
+                              child: Text(
+                                "1X",
+                                style: TextStyle(
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              onTap: () {
+                                flickManager.flickControlManager!
+                                    .setPlaybackSpeed(1.25);
+                              },
+                              child: Text(
+                                "1.25X",
+                                style: TextStyle(
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              onTap: () {
+                                flickManager.flickControlManager!
+                                    .setPlaybackSpeed(1.5);
+                              },
+                              child: Text(
+                                "1.5X",
+                                style: TextStyle(
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              onTap: () {
+                                flickManager.flickControlManager!
+                                    .setPlaybackSpeed(2.0);
+                              },
+                              child: Text(
+                                "2X",
+                                style: TextStyle(
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ];
+                        },
+                      ),
                       SizedBox(
                         width: iconSize / 2,
                       ),

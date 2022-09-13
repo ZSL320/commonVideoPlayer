@@ -84,9 +84,6 @@ class FlickVideoControlsPageState extends State<FlickVideoControlsPage> {
   bool locked = false;
   bool onlyShowLock = false;
   bool showPlayerControls = true;
-  double _fullDx = 0;
-  double _fullDy = 0;
-  final GlobalKey _fullScreenKey = GlobalKey();
 
   @override
   void initState() {
@@ -121,15 +118,6 @@ class FlickVideoControlsPageState extends State<FlickVideoControlsPage> {
   void showPlayerListener() {
     showPlayerControls =
         widget.flickManager!.flickDisplayManager!.showPlayerControls;
-    setState(() {});
-  }
-
-  getFullScreenPosition() {
-    RenderBox? box =
-        _fullScreenKey.currentContext?.findAncestorRenderObjectOfType();
-    Offset offset = box!.localToGlobal(Offset.zero);
-    _fullDx = offset.dx;
-    _fullDy = offset.dy;
     setState(() {});
   }
 
@@ -220,7 +208,6 @@ class FlickVideoControlsPageState extends State<FlickVideoControlsPage> {
                                               widget.flickManager!
                                                   .flickDisplayManager!
                                                   .hidePlayerControls();
-                                              getFullScreenPosition();
                                               onlyShowLock = true;
                                               widget.lockedValueNotifier!
                                                   .value = true;
@@ -231,13 +218,10 @@ class FlickVideoControlsPageState extends State<FlickVideoControlsPage> {
                                             }
                                             setState(() {});
                                           },
-                                          icon: Container(
-                                            key: _fullScreenKey,
-                                            child: const Icon(
-                                              Icons.lock_open_outlined,
-                                              color: Colors.grey,
-                                              size: 25,
-                                            ),
+                                          icon: const Icon(
+                                            Icons.lock_open_outlined,
+                                            color: Colors.grey,
+                                            size: 25,
                                           ),
                                         ),
                                       ),
@@ -283,64 +267,62 @@ class FlickVideoControlsPageState extends State<FlickVideoControlsPage> {
                             widget.percentageWidget ?? Container(),
                           ],
                         )),
+                      if (locked)
+                        widget.lockedWidget ??
+                            Positioned.fill(
+                              child: GestureDetector(
+                                child: Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  color: const Color(0x00000000),
+                                  alignment: Alignment.topCenter,
+                                  child: Stack(
+                                    children: [
+                                      IgnorePointer(
+                                        ignoring: !onlyShowLock,
+                                        child: AnimatedOpacity(
+                                          opacity:
+                                              showPlayerControls || onlyShowLock
+                                                  ? 1.0
+                                                  : 0.0,
+                                          duration:
+                                              const Duration(milliseconds: 250),
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: IconButton(
+                                              padding: EdgeInsets.zero,
+                                              onPressed: () {
+                                                locked = !locked;
+                                                widget.flickManager!
+                                                    .flickDisplayManager!
+                                                    .handleShowPlayerControls();
+                                                widget.valueNotifier!.value =
+                                                    false;
+                                                setState(() {});
+                                              },
+                                              icon: const Icon(
+                                                Icons.lock_outlined,
+                                                color: Colors.grey,
+                                                size: 25,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                onTap: () {
+                                  onlyShowLock = !onlyShowLock;
+                                  widget.lockedValueNotifier!.value =
+                                      onlyShowLock;
+                                  setState(() {});
+                                },
+                              ),
+                            )
                     ],
                   ),
                 ),
-                if (locked)
-                  widget.lockedWidget ??
-                      Positioned.fill(
-                        child: GestureDetector(
-                          child: Container(
-                            width: double.infinity,
-                            height: double.infinity,
-                            color: const Color(0x00000000),
-                            alignment: Alignment.topCenter,
-                            child: Stack(
-                              children: [
-                                Positioned(
-                                  left: _fullDx,
-                                  top: _fullDy,
-                                  child: IgnorePointer(
-                                    ignoring: !onlyShowLock,
-                                    child: AnimatedOpacity(
-                                      opacity:
-                                          showPlayerControls || onlyShowLock
-                                              ? 1.0
-                                              : 0.0,
-                                      duration:
-                                          const Duration(milliseconds: 250),
-                                      child: Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: IconButton(
-                                          padding: EdgeInsets.zero,
-                                          onPressed: () {
-                                            locked = !locked;
-                                            widget.flickManager!
-                                                .flickDisplayManager!
-                                                .handleShowPlayerControls();
-                                            widget.valueNotifier!.value = false;
-                                            setState(() {});
-                                          },
-                                          icon: const Icon(
-                                            Icons.lock_outlined,
-                                            color: Colors.grey,
-                                            size: 25,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          onTap: () {
-                            onlyShowLock = !onlyShowLock;
-                            widget.lockedValueNotifier!.value = onlyShowLock;
-                            setState(() {});
-                          },
-                        ),
-                      )
               ],
             ),
           ),

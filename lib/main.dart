@@ -67,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Container(
                     height: 360,
                     child: CommonVideoPlayer(
+                      showArrow: false,
                       controller: (value) {
                         flickManager = value;
                         if (flickManager != null) {
