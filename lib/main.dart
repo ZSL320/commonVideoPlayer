@@ -1,3 +1,4 @@
+import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 
 import 'flick_video/flick_video_page.dart';
@@ -30,24 +31,88 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  FlickManager? flickManager;
+  Widget? player;
+  bool? isPlaying;
+  bool? videoFinished;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Container(
-        alignment: Alignment.center,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const CommonVideoPlayer(
-                videoPath:
-                    "https://assets.mixkit.co/videos/preview/mixkit-daytime-city-traffic-aerial-view-56-large.mp4",
-              );
-            }));
-          },
-          child: const Text("点击进入视频播放"),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (isPlaying!) {
+            flickManager!.flickControlManager!.pause();
+          } else {
+            flickManager!.flickControlManager!.play();
+          }
+        },
+        child: videoFinished ?? false
+            ? Icon(Icons.play_arrow)
+            : isPlaying ?? false
+                ? Icon(Icons.pause)
+                : Icon(Icons.play_arrow),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ///如果不满意设计的ui可以根据返回的ui自己设计控件，不影响性能的情况下可以隐藏
+            IgnorePointer(
+              ignoring: false,
+              child: Opacity(
+                  opacity: 1.0,
+                  child: Container(
+                    height: 360,
+                    child: CommonVideoPlayer(
+                      controller: (value) {
+                        flickManager = value;
+                        if (flickManager != null) {
+                          flickManager!.flickVideoManager!.addListener(() {
+                            videoFinished =
+                                flickManager!.flickVideoManager!.isVideoEnded;
+                            isPlaying =
+                                flickManager!.flickVideoManager!.isPlaying;
+                            setState(() {});
+                          });
+                        }
+                      },
+                      playerWidget: (value) {
+                        player = value;
+                      },
+                      videoPath:
+                          "https://assets.mixkit.co/videos/preview/mixkit-daytime-city-traffic-aerial-view-56-large.mp4",
+                    ),
+                  )),
+            ),
+            SizedBox(
+              height: 13,
+            ),
+            const Text("播放ui，控件可根据返回的controller自定义"),
+            SizedBox(
+              height: 13,
+            ),
+            player ?? Container(),
+            SizedBox(
+              height: 38,
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const CommonVideoPlayer(
+                      videoPath:
+                          "https://assets.mixkit.co/videos/preview/mixkit-daytime-city-traffic-aerial-view-56-large.mp4",
+                    );
+                  }));
+                },
+                child: const Text("点击进入视频播放"),
+              ),
+            )
+          ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );

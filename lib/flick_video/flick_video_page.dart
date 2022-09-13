@@ -18,8 +18,22 @@ import 'flick_port_control.dart';
 
 class CommonVideoPlayer extends StatefulWidget {
   final String videoPath;
-  const CommonVideoPlayer({Key? key, required this.videoPath})
-      : super(key: key);
+  final FlickProgressBarSettings? flickProgressBarSettings;
+  final Widget? unLockedWidget;
+  final Widget? lockedWidget;
+  final bool? showArrow;
+  final ValueChanged<Widget>? playerWidget;
+  final ValueChanged<FlickManager>? controller;
+  const CommonVideoPlayer({
+    Key? key,
+    required this.videoPath,
+    this.flickProgressBarSettings,
+    this.lockedWidget,
+    this.unLockedWidget,
+    this.showArrow,
+    this.playerWidget,
+    this.controller,
+  }) : super(key: key);
 
   @override
   _CommonVideoPlayerState createState() => _CommonVideoPlayerState();
@@ -55,6 +69,9 @@ class _CommonVideoPlayerState extends State<CommonVideoPlayer> {
     flickManager = FlickManager(
       videoPlayerController: VideoPlayerController.network(widget.videoPath),
     );
+    if (widget.controller != null) {
+      widget.controller!(flickManager!);
+    }
     _setInit();
     flickManager!.flickControlManager!.addListener(playListener);
     flickManager!.flickDisplayManager!.addListener(listener);
@@ -368,13 +385,33 @@ class _CommonVideoPlayerState extends State<CommonVideoPlayer> {
             percentageWidget: _percentageWidget,
             flickManager: flickManager,
             valueNotifier: valueNotifier,
+            lockedWidget: widget.lockedWidget,
+            unLockedWidget: widget.unLockedWidget,
             lockedValueNotifier: lockedNotifier,
+            showArrow: widget.showArrow,
+            playerWidget: (value) {
+              if (widget.playerWidget != null) {
+                widget.playerWidget!(value);
+              }
+            },
             controls: VideoState.isFullScreen
                 ? VideoPortraitControls(
                     flickManager: flickManager!,
+                    progressBarSettings: FlickProgressBarSettings(
+                      curveRadius: 30,
+                      playedColor: Color(0xffee4a0f),
+                      height: 6,
+                      handleRadius: 7,
+                    ),
                   )
                 : VideoPlayerFlickPortraitControls(
                     flickManager: flickManager!,
+                    progressBarSettings: FlickProgressBarSettings(
+                      curveRadius: 30,
+                      playedColor: Color(0xffee4a0f),
+                      height: 6,
+                      handleRadius: 7,
+                    ),
                   ),
           ),
         ),

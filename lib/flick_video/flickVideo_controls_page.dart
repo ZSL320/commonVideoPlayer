@@ -17,10 +17,13 @@ class FlickVideoControlsPage extends StatefulWidget {
     this.lockedValueNotifier,
     this.percentageWidget,
     this.iconWidgetList,
+    this.unLockedWidget,
+    this.lockedWidget,
     this.videoFit = BoxFit.cover,
-    this.showPlayerControls,
     this.flickManager,
     this.onlyShowLock,
+    this.showArrow,
+    this.playerWidget,
     this.playerLoadingFallback = const Center(
       child: CircularProgressIndicator(),
     ),
@@ -64,11 +67,14 @@ class FlickVideoControlsPage extends StatefulWidget {
   final IconThemeData iconThemeData;
   final double aspectRatioWhenLoading;
   final bool willVideoPlayerControllerChange;
-  final bool? showPlayerControls;
   get videoPlayerController => null;
   final List<Widget>? iconWidgetList;
   final FlickManager? flickManager;
   final bool? onlyShowLock;
+  final Widget? unLockedWidget;
+  final Widget? lockedWidget;
+  final bool? showArrow;
+  final ValueChanged<Widget>? playerWidget;
   @override
   FlickVideoControlsPageState createState() => FlickVideoControlsPageState();
 }
@@ -136,6 +142,13 @@ class FlickVideoControlsPageState extends State<FlickVideoControlsPage> {
         _videoPlayerController == null) {
       _videoPlayerController = newController;
     }
+    if (widget.playerWidget != null) {
+      widget.playerWidget!(VideoNativePlayer(
+        videoPlayerController: _videoPlayerController,
+        fit: BoxFit.contain,
+        aspectRatioWhenLoading: widget.aspectRatioWhenLoading,
+      ));
+    }
     super.didChangeDependencies();
   }
 
@@ -187,81 +200,86 @@ class FlickVideoControlsPageState extends State<FlickVideoControlsPage> {
                             ),
                             widget.controls ?? Container(),
                             if (!locked)
-                              IgnorePointer(
-                                ignoring: !showPlayerControls,
-                                child: AnimatedOpacity(
-                                  opacity: showPlayerControls || onlyShowLock
-                                      ? 1.0
-                                      : 0.0,
-                                  duration: const Duration(milliseconds: 250),
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: IconButton(
-                                      padding: EdgeInsets.zero,
-                                      onPressed: () {
-                                        locked = !locked;
-                                        if (locked) {
-                                          widget.flickManager!
-                                              .flickDisplayManager!
-                                              .hidePlayerControls();
-                                          getFullScreenPosition();
-                                          onlyShowLock = true;
-                                          widget.lockedValueNotifier!.value =
-                                              true;
-                                        } else {
-                                          widget.flickManager!
-                                              .flickDisplayManager!
-                                              .handleShowPlayerControls();
-                                        }
-                                        setState(() {});
-                                      },
-                                      icon: Container(
-                                        key: _fullScreenKey,
-                                        child: const Icon(
-                                          Icons.lock_open_outlined,
-                                          color: Colors.grey,
-                                          size: 25,
+                              widget.unLockedWidget ??
+                                  IgnorePointer(
+                                    ignoring: !showPlayerControls,
+                                    child: AnimatedOpacity(
+                                      opacity:
+                                          showPlayerControls || onlyShowLock
+                                              ? 1.0
+                                              : 0.0,
+                                      duration:
+                                          const Duration(milliseconds: 250),
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: IconButton(
+                                          padding: EdgeInsets.zero,
+                                          onPressed: () {
+                                            locked = !locked;
+                                            if (locked) {
+                                              widget.flickManager!
+                                                  .flickDisplayManager!
+                                                  .hidePlayerControls();
+                                              getFullScreenPosition();
+                                              onlyShowLock = true;
+                                              widget.lockedValueNotifier!
+                                                  .value = true;
+                                            } else {
+                                              widget.flickManager!
+                                                  .flickDisplayManager!
+                                                  .handleShowPlayerControls();
+                                            }
+                                            setState(() {});
+                                          },
+                                          icon: Container(
+                                            key: _fullScreenKey,
+                                            child: const Icon(
+                                              Icons.lock_open_outlined,
+                                              color: Colors.grey,
+                                              size: 25,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            Positioned(
-                              top: 30,
-                              left: 10,
-                              child: IgnorePointer(
-                                ignoring: !showPlayerControls,
-                                child: AnimatedOpacity(
-                                  opacity: showPlayerControls ? 1.0 : 0.0,
-                                  duration: const Duration(milliseconds: 250),
-                                  child: IconButton(
-                                      onPressed: () {
-                                        if (VideoState.isFullScreen) {
-                                          widget.flickManager!
-                                              .flickDisplayManager!
-                                              .hidePlayerControls();
-                                          AutoOrientation.portraitAutoMode();
-                                          if (Platform.isAndroid) {
-                                            ///关闭状态栏，与底部虚拟操作按钮
-                                            SystemChrome.setEnabledSystemUIMode(
-                                                SystemUiMode.manual,
-                                                overlays:
-                                                    SystemUiOverlay.values);
+                            if (widget.showArrow ?? true)
+                              Positioned(
+                                top: 30,
+                                left: 10,
+                                child: IgnorePointer(
+                                  ignoring: !showPlayerControls,
+                                  child: AnimatedOpacity(
+                                    opacity: showPlayerControls ? 1.0 : 0.0,
+                                    duration: const Duration(milliseconds: 250),
+                                    child: IconButton(
+                                        onPressed: () {
+                                          if (VideoState.isFullScreen) {
+                                            widget.flickManager!
+                                                .flickDisplayManager!
+                                                .hidePlayerControls();
+                                            AutoOrientation.portraitAutoMode();
+                                            if (Platform.isAndroid) {
+                                              ///关闭状态栏，与底部虚拟操作按钮
+                                              SystemChrome
+                                                  .setEnabledSystemUIMode(
+                                                      SystemUiMode.manual,
+                                                      overlays: SystemUiOverlay
+                                                          .values);
+                                            }
+                                            VideoState.isFullScreen = false;
+                                          } else {
+                                            Navigator.pop(context);
                                           }
-                                          VideoState.isFullScreen = false;
-                                        } else {
-                                          Navigator.pop(context);
-                                        }
-                                      },
-                                      icon: const Icon(
-                                        Icons.arrow_back_ios,
-                                        size: 30,
-                                        color: Colors.white,
-                                      )),
+                                        },
+                                        icon: const Icon(
+                                          Icons.arrow_back_ios,
+                                          size: 30,
+                                          color: Colors.white,
+                                        )),
+                                  ),
                                 ),
                               ),
-                            ),
                             widget.percentageWidget ?? Container(),
                           ],
                         )),
@@ -269,57 +287,60 @@ class FlickVideoControlsPageState extends State<FlickVideoControlsPage> {
                   ),
                 ),
                 if (locked)
-                  Positioned.fill(
-                    child: GestureDetector(
-                      child: Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        color: const Color(0x00000000),
-                        alignment: Alignment.topCenter,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              left: _fullDx,
-                              top: _fullDy,
-                              child: IgnorePointer(
-                                ignoring: !onlyShowLock,
-                                child: AnimatedOpacity(
-                                  opacity: showPlayerControls || onlyShowLock
-                                      ? 1.0
-                                      : 0.0,
-                                  duration: const Duration(milliseconds: 250),
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: IconButton(
-                                      padding: EdgeInsets.zero,
-                                      onPressed: () {
-                                        locked = !locked;
-                                        widget
-                                            .flickManager!.flickDisplayManager!
-                                            .handleShowPlayerControls();
-                                        widget.valueNotifier!.value = false;
-                                        setState(() {});
-                                      },
-                                      icon: const Icon(
-                                        Icons.lock_outlined,
-                                        color: Colors.grey,
-                                        size: 25,
+                  widget.lockedWidget ??
+                      Positioned.fill(
+                        child: GestureDetector(
+                          child: Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            color: const Color(0x00000000),
+                            alignment: Alignment.topCenter,
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  left: _fullDx,
+                                  top: _fullDy,
+                                  child: IgnorePointer(
+                                    ignoring: !onlyShowLock,
+                                    child: AnimatedOpacity(
+                                      opacity:
+                                          showPlayerControls || onlyShowLock
+                                              ? 1.0
+                                              : 0.0,
+                                      duration:
+                                          const Duration(milliseconds: 250),
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: IconButton(
+                                          padding: EdgeInsets.zero,
+                                          onPressed: () {
+                                            locked = !locked;
+                                            widget.flickManager!
+                                                .flickDisplayManager!
+                                                .handleShowPlayerControls();
+                                            widget.valueNotifier!.value = false;
+                                            setState(() {});
+                                          },
+                                          icon: const Icon(
+                                            Icons.lock_outlined,
+                                            color: Colors.grey,
+                                            size: 25,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            )
-                          ],
+                                )
+                              ],
+                            ),
+                          ),
+                          onTap: () {
+                            onlyShowLock = !onlyShowLock;
+                            widget.lockedValueNotifier!.value = onlyShowLock;
+                            setState(() {});
+                          },
                         ),
-                      ),
-                      onTap: () {
-                        onlyShowLock = !onlyShowLock;
-                        widget.lockedValueNotifier!.value = onlyShowLock;
-                        setState(() {});
-                      },
-                    ),
-                  )
+                      )
               ],
             ),
           ),
